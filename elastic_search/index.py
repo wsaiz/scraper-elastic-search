@@ -25,41 +25,42 @@ def create_index(es_client, index_name):
                     "russian_synonyms": {
                         "type": "synonym",
                         "synonyms": [
-                        "linux, ubuntu, fedora, debian, centos, rhel, opensuse, suse, линукс, убунту, федора, дебян, центос, рел, опенсусе, сусе",
-                        "windows, win, виндовс, вин, виндоус",
-                        "macos, mac, apple, макос, мак, эппл",
-                        "rust, раст, ржавый",
-                        "python, py, пайтон, питон",
-                        "javascript, js, джаваскрипт, жс, яваскрипт",
-                        "java, джава, ява",
-                        "gnome, гном",
-                        "plasma, плазма",
-                        "xfce, иксфце, иксфсе",
-                        "desktop, рабочий стол, десктоп",
-                        "wayland, вейленд, вяленый",
-                        "firefox, фаерфокс",
-                        "mozilla, мозилла",
-                        "chrome, google chrome, хром, гугл хром",
-                        "http, хттп",
-                        "https, хттпс",
-                        "apache, апаче",
-                        "server, сервер",
-                        "nvidia, нвидиа",
-                        "intel, интел",
-                        "gpu, графический процессор, видеокарта",
-                        "cpu, центральный процессор, цпу, процессор, цп",
-                        "vulkan, вулкан",
-                        "opengl, опенгл",
-                        "wine, вайн",
-                        "systemd, системд",
-                        "system, система",
-                        "shell, шелл, командная строка, консоль",
-                        "root, рут, администратор",
-                        "postgresql, postgres, постгрескьюэл, постгрес, постгря",
-                        "flatpak, флатпак",
-                        "raspberry, raspberry pi, распберри, распберри пи",
-                        "gplv, gpl, license, гпл, лицензия",
-                        "live, iso, лайв, айсо"]
+                            "linux, ubuntu, fedora, debian, centos, rhel, opensuse, suse, линукс, убунту, федора, дебян, центос, рел, опенсусе, сусе",
+                            "windows, win, виндовс, вин, виндоус",
+                            "macos, mac, apple, макос, мак, эппл",
+                            "rust, раст, ржавый",
+                            "python, py, пайтон, питон",
+                            "javascript, js, джаваскрипт, жс, яваскрипт",
+                            "java, джава, ява",
+                            "gnome, гном",
+                            "plasma, плазма",
+                            "xfce, иксфце, иксфсе",
+                            "desktop, рабочий стол, десктоп",
+                            "wayland, вейленд, вяленый",
+                            "firefox, фаерфокс",
+                            "mozilla, мозилла",
+                            "chrome, google chrome, хром, гугл хром",
+                            "http, хттп",
+                            "https, хттпс",
+                            "apache, апаче",
+                            "server, сервер",
+                            "nvidia, нвидиа",
+                            "intel, интел",
+                            "gpu, графический процессор, видеокарта",
+                            "cpu, центральный процессор, цпу, процессор, цп",
+                            "vulkan, вулкан",
+                            "opengl, опенгл",
+                            "wine, вайн",
+                            "systemd, системд",
+                            "system, система",
+                            "shell, шелл, командная строка, консоль",
+                            "root, рут, администратор",
+                            "postgresql, postgres, постгрескьюэл, постгрес, постгря",
+                            "flatpak, флатпак",
+                            "raspberry, raspberry pi, распберри, распберри пи",
+                            "gplv, gpl, license, гпл, лицензия",
+                            "live, iso, лайв, айсо"
+                        ]
                     }
                 },
                 "analyzer": {
@@ -75,7 +76,8 @@ def create_index(es_client, index_name):
                 "id": {"type": "keyword"},
                 "url": {"type": "keyword"},
                 "title": {"type": "text", "analyzer": "russian_analyzer"},
-                "content": {"type": "text", "analyzer": "russian_analyzer"}
+                "content": {"type": "text", "analyzer": "russian_analyzer"},
+                "keywords": {"type": "keyword"} 
             }
         }
     }
@@ -104,7 +106,8 @@ def index_documents(es_client, index_name, json_file):
                 "id": item["id"],
                 "url": item.get("url", ""),
                 "title": item.get("title", ""),
-                "content": item.get("content", "")
+                "content": item.get("content", ""),
+                "keywords": item.get("keywords", [])  # добавляем ключевые слова
             }
         }
         for item in news
@@ -113,6 +116,7 @@ def index_documents(es_client, index_name, json_file):
     helpers.bulk(es_client, actions)
     logger.info(f"[INFO] Индексировано {len(actions)} документов")
     es_client.indices.refresh(index=index_name)
+
 
 
 def main():

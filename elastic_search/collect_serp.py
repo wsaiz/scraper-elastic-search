@@ -12,7 +12,7 @@ def search(query, size=10):
         "query": {
             "multi_match": {
                 "query": query,
-                "fields": ["title^2", "content"]
+                "fields": ["title^2", "content", "keywords^3"] 
             }
         }
     }
@@ -20,8 +20,9 @@ def search(query, size=10):
     results = []
     for h in res.get("hits", {}).get("hits", []):
         results.append({
-            "relevance": None, 
+            "relevance": None,
             "id": h["_id"],
+            "keywords": h["_source"].get("keywords", []), 
             "title": h["_source"]["title"],
             "content": h["_source"]["content"]
         })
@@ -52,6 +53,7 @@ if __name__ == "__main__":
                 "relevance": None,
                 "query": q,
                 "id": hit["id"],
+                "keywords": ", ".join(hit["keywords"]), 
                 "title": hit["title"],
                 "content": hit["content"]
             })

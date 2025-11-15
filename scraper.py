@@ -160,8 +160,31 @@ def extract_article_text(soup: BeautifulSoup) -> Optional[str]:
 
 
 def extract_article_title(soup: BeautifulSoup, num: int) -> str:
-    tag = soup.find("h1")
-    return clean_text(tag.get_text(strip=True)) if tag else f"Новость {num}"
+    span = soup.select_one("span#r_title")
+    if span:
+        return clean_text(span.get_text(" ", strip=True))
+
+    h1 = soup.find("h1")
+    if h1:
+        return clean_text(h1.get_text(" ", strip=True))
+
+    h2 = soup.find("h2")
+    if h2:
+        return clean_text(h2.get_text(" ", strip=True))
+
+    return f"Новость {num}"
+
+def extract_article_keywords(soup: BeautifulSoup) -> List[str]:
+    keywords = []
+    span = soup.select_one("span#r_keyword_link")
+    if span:
+        links = span.find_all("a")
+        for a in links:
+            kw = clean_text(a.get_text(strip=True))
+            if kw:
+                keywords.append(kw)
+    return keywords
+
 
 
 
@@ -190,13 +213,16 @@ def fetch_article(num: int, delay: float = 0.1) -> Optional[Dict]:
         return None
 
     title = extract_article_title(soup, num)
+    keywords = extract_article_keywords(soup)
 
     return {
         "id": str(num),
         "url": url,
         "title": title,
         "content": text,
+        "keywords": keywords,  
     }
+
 
 
 def scrape_range(start_num: int, amount: int,
