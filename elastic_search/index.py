@@ -107,7 +107,7 @@ def index_documents(es_client, index_name, json_file):
                 "url": item.get("url", ""),
                 "title": item.get("title", ""),
                 "content": item.get("content", ""),
-                "keywords": item.get("keywords", [])  # добавляем ключевые слова
+                "keywords": item.get("keywords", []) 
             }
         }
         for item in news

@@ -4,7 +4,6 @@ from elasticsearch import Elasticsearch
 ES_HOST = "http://localhost:9200"
 INDEX_NAME = "opennet_news"
 
-
 es = Elasticsearch(ES_HOST)
 
 if not es.ping():
@@ -78,4 +77,13 @@ if __name__ == "__main__":
             title = source.get("title", "")
             content = source.get("content", "")
             url = source.get("url", "")
-            print(f"{i}. {title}\n   URL: {url}\n   {content[:500]}{'...' if len(content) > 500 else ''}\n")
+            keywords = source.get("keywords", [])
+            keywords_str = ", ".join(keywords) if keywords else "-"
+
+            print(
+                f"[Result {i}]\n"
+                f"   [Title]: {title}\n"
+                f"   [URL]: {url}\n"
+                f"   [Keywords]: {keywords_str}\n"
+                f"   [Content]: {content[:500]}{'...' if len(content) > 500 else ''}\n"
+            )
