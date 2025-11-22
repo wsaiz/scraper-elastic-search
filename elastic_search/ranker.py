@@ -25,7 +25,6 @@ class relevance_ranker:
         df['title_len'] = df['title'].str.len()
         df['keywords_count'] = df['keywords'].str.count(',') + 1
         df['content_len'] = df['content_short'].str.len()
-
         return df
 
     def calculate_ml_score(self, query_text, article_data):
@@ -40,7 +39,7 @@ class relevance_ranker:
             print(f"[ERROR] ML-ранжирование: {e}")
             return 0.0
 
-    def rerank_results(self, query_text, es_results, ml_weight=0.7, es_weight=0.3):
+    def rerank_results(self, query_text, es_results, ml_weight=0.65, es_weight=0.35):
         if not es_results or 'hits' not in es_results:
             return es_results
 
