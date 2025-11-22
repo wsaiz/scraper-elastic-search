@@ -84,8 +84,6 @@ def search(query: str, size: int = 10, ml_weight=0.7, es_weight=0.3):
 
 
     res = es.search(index=INDEX_NAME, body=body, size=size)
-
-    # Используем ML ранкер для переранжирования
     enhanced_res = ranker.rerank_results(corrected_query, res, ml_weight=ml_weight, es_weight=es_weight)
     hits = enhanced_res.get("hits", {}).get("hits", [])
     return hits

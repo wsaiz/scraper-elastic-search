@@ -45,9 +45,13 @@ class relevance_ranker:
             return es_results
 
         hits = es_results['hits']['hits']
+        es_scores = [hit['_score'] for hit in hits]
+        max_es_score = max(es_scores) if es_scores else 1
+        min_es_score = min(es_scores) if es_scores else 0
+        
         enhanced_results = []
 
-        for hit in hits:
+        for i, hit in enumerate(hits):
             article_data = {
                 'title': hit['_source'].get('title', ''),
                 'content': hit['_source'].get('content', ''),
@@ -56,12 +60,18 @@ class relevance_ranker:
             }
 
             ml_score = self.calculate_ml_score(query_text, article_data)
-            es_score_normalized = min(hit['_score'] / 100, 1.0) 
+            
+            if max_es_score > min_es_score:
+                es_score_normalized = (hit['_score'] - min_es_score) / (max_es_score - min_es_score)
+            else:
+                es_score_normalized = 1.0
+                
             combined_score = ml_weight * ml_score + es_weight * es_score_normalized
 
             enhanced_results.append({
                 **hit,
                 '_ml_score': ml_score,
+                '_es_score_normalized': es_score_normalized,
                 '_combined_score': combined_score
             })
 
