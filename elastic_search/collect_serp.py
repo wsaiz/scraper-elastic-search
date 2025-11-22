@@ -62,6 +62,6 @@ if __name__ == "__main__":
         json.dump(all_results, f, ensure_ascii=False, indent=2)
 
     df = pd.DataFrame(excel_rows)
-    df.to_excel("serp_results.xlsx", index=False)
+    df.to_excel("serp_after_ml.xlsx", index=False)
 
     print("SERP сохранена в serp_results.json и serp_results.xlsx.")
